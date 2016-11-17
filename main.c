@@ -53,7 +53,7 @@ Bignumber *pop(Stack **head)
     Stack * next_node = NULL;
 
     if (*head == NULL) {
-        printf("Piwev nahuy, stack pustoy");
+        printf("Stack is empty, sorry.");
         return NULL;
     }
 
