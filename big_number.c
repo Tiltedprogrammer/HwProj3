@@ -86,7 +86,7 @@ void print_number(Bignumber *number)
 void free_list(Bignumber **list)
 {
 	Node *tmp = NULL;
-    while(tmp = (*list)->head)
+    while((tmp = (*list)->head))
     {
         (*list)->head = (*list) ->head->next_node;
         free(tmp);
