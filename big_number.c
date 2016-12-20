@@ -83,15 +83,16 @@ void print_number(Bignumber *number)
 	}
 	printf("\n");
 }
-void free_list(Bignumber **list)
+void free_list(Bignumber *list)
 {
 	Node *tmp = NULL;
-    while((tmp = (*list)->head))
+    while((tmp = (list)->head))
     {
-        (*list)->head = (*list) ->head->next_node;
+        (list)->head = (list) ->head->next_node;
         free(tmp);
     }
-    free(*list);
+    free(list);
+    list = NULL;
 }
 void swap(Bignumber **f, Bignumber **s)
 {
@@ -101,3 +102,9 @@ void swap(Bignumber **f, Bignumber **s)
     *s = tmp;
 
 }   
+void free_node(Node **cur)
+{
+	Node *tmp = *cur;
+	*cur = (*cur)->next_node;
+	free(tmp);
+}

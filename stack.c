@@ -9,7 +9,7 @@ void free_stack(Stack *head)
     while((tmp = head))
     {
         head = head -> next_number;
-        free_list(&(tmp->number));
+        free_list((tmp->number));
         free(tmp);
     }
     //free(tmp);

@@ -17,5 +17,6 @@ void add_to_b(Bignumber **head_ref, char c);
 void add_to_e(Bignumber **tail_ref, char c);
 Bignumber *get_number(char c);
 void print_number(Bignumber *number);
-void free_list(Bignumber **list);
+void free_list(Bignumber *list);
 void swap(Bignumber **f, Bignumber **s);
+void free_node(Node **cur);

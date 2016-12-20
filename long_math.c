@@ -55,29 +55,29 @@ void sum_of(Stack **stack)
     Bignumber *second = pop(stack);
     Node *f = first -> head, *s = second -> head;
     Bignumber *res = new_Number();
-    char carry = 0, sum;
+    char carry = 0, sum = 0;
     while(f != NULL || s != NULL)
     {
         sum = carry + (f? f->digit: 0) + (s? s->digit: 0);
-        carry = (sum >= 10)? 1 : 0; // or carry = sum / 10;
+        carry = sum / 10;//(sum >= 10)? 1 : 0; // or carry = sum / 10;
         sum = sum % 10;
         add_to_e(&res,sum);
-        if(f) f = f -> next_node;
-        if(s) s = s -> next_node;
+        if(f) free_node(&f);//f = f -> next_node;
+        if(s) free_node(&s);//s = s -> next_node;
     }
     if(carry > 0)
     {
         add_to_e(&res, carry);
     }
-    free_list(&first);
-    free_list(&second);
+    free(first);
+    free(second);
     push(stack, res);
     (*stack) -> sign = sign;
     
 }
 Bignumber *sum_factors(Bignumber **first, Bignumber **second)
 {
-    Bignumber *first_to_free = (*first), *second_to_free = (*second);
+    //Bignumber *first_to_free = (*first), *second_to_free = (*second);
     Node *f = (*first) -> head, *s = (*second) ->head;
     Bignumber *res = new_Number();
     //Bignumber *tmp, *prev = NULL;
@@ -88,15 +88,15 @@ Bignumber *sum_factors(Bignumber **first, Bignumber **second)
         carry = (sum >= 10)? 1 : 0;
         sum = sum % 10;
         add_to_e(&res,sum);
-        if(f) f = f -> next_node;
-        if(s) s = s -> next_node;
+        if(f) free_node(&f);
+        if(s) free_node(&s);
     }
     if(carry > 0)
     {
         add_to_e(&res, carry);
     }
-    free_list(&first_to_free);
-    free_list(&second_to_free);
+    free(*first);
+    free(*second);
     return res;
 }
 void multiply_of(Stack **stack)
@@ -111,11 +111,10 @@ void multiply_of(Stack **stack)
        add_to_e(&res,0);
        push(stack,res);
        (*stack) -> sign = 0;
-       free_list(&first);
-       free_list(&second);
+       free_list(first);
+       free_list(second);
        return;
     }
-    Bignumber *first_to_free = first, *second_to_free = second;
     Node *f = first ->head;
     Node *s = second -> head;
     add_to_e(&res, 0);
@@ -132,7 +131,8 @@ void multiply_of(Stack **stack)
            factor = ((s -> digit)*(tmp ->digit)) + carry;
            add_to_e(&tmp_res,factor % 10);
            carry = factor / 10;
-           tmp = tmp -> next_node;
+           if(!s->next_node) free_node(&tmp);
+           else tmp = tmp -> next_node;
        }
 
        if(carry > 0) add_to_e(&tmp_res, carry);
@@ -147,8 +147,8 @@ void multiply_of(Stack **stack)
     }
     push(stack, res);
     (*stack) -> sign = (s1 == s2) ? 0:1;
-    free_list(&first_to_free);
-    free_list(&second_to_free);
+    free(first);
+    free_list(second);
 }
 void substraction(Stack **stack)
 {
@@ -158,8 +158,8 @@ void substraction(Stack **stack)
     Bignumber *first = pop(stack);
     if(comparator(first, second) == 0)
     {
-        free_list(&first);
-        free_list(&second);
+        free_list(first);
+        free_list(second);
         add_to_e(&res, 0);
         push(stack, res);
         (*stack) -> sign = 0;
@@ -193,11 +193,11 @@ void substraction(Stack **stack)
           carry = 0;
       }
       add_to_e(&res, sub);
-      f = f->next_node;
-      s = s->next_node;
+      free_node(&f);
+      free_node(&s);
     }
-    free_list(&first);
-    free_list(&second);
+    free(first);
+    free(second);
     eliminate_zeroes(&res);
     push(stack, res);
     (*stack) -> sign = s_res;
@@ -209,8 +209,8 @@ Bignumber *division_sub(Bignumber **f, Bignumber **s)
     Bignumber *second = *s;
     if(comparator(first, second) == 0)
     {
-        free_list(f);
-        free_list(s);
+        free_list(*f);
+        free_list(*s);
         add_to_e(&res, 0);
         return res;
     }
@@ -236,11 +236,11 @@ Bignumber *division_sub(Bignumber **f, Bignumber **s)
           carry = 0;
       }
       add_to_e(&res, sub);
-      fp = fp->next_node;
-      sp = sp->next_node;
+      free_node(&fp);
+      free_node(&sp);
     }
-    free_list(&first);
-    free_list(&second);
+    free(first);
+    free(second);
     eliminate_zeroes(&res);
     return res;
 
@@ -271,15 +271,15 @@ void division(Stack **stack)
     Bignumber *first = pop(stack);
     if(second ->tail->digit == 0)
     {
-    	free_list(&first);
-    	free_list(&second);
+    	free_list(first);
+    	free_list(second);
         printf("Division by 0");
         exit(1);
     }
     if(comparator(first, second)== -1)
     {
-        free_list(&first);
-        free_list(&second);
+        free_list(first);
+        free_list(second);
         add_to_e(&res, 0);
         push(stack,res);
         return;
@@ -299,10 +299,10 @@ void division(Stack **stack)
           {
           
               i++;
-              free_list(&tmp_res);
+              free_list(tmp_res);
               tmp_res = division_multiply(&second, i);
           }
-    free_list(&tmp_res);            
+    free_list(tmp_res);            
     i -=1;
     tmp_res = division_multiply(&second, i);
     add_to_e(&res, i);
@@ -332,11 +332,11 @@ void division(Stack **stack)
         while(((comp = comparator(tmp_res,tmp)) == -1) || (comp == 0))
             {
                 i++;
-                free_list(&tmp_res);
+                free_list(tmp_res);
                 tmp_res = division_multiply(&second, i);
             } 
         i -=1;
-        free_list(&tmp_res);
+        free_list(tmp_res);
         if (i != 0)
         {
             tmp_res = division_multiply(&second, i);
@@ -344,9 +344,9 @@ void division(Stack **stack)
             tmp = division_sub(&tmp, &tmp_res);
         }
     }
-    free_list(&tmp);
-    free_list(&first);
-    free_list(&second);
+    free_list(tmp);
+    free_list(first);
+    free_list(second);
     push(stack,res);
     (*stack) -> sign = (s1 == s2) ? 0:1;
 
