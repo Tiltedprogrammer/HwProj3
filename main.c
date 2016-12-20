@@ -78,11 +78,15 @@ int main()
     	case ' ':
         	break;
     	case'=':
-    	if(stack->sign == 1)
-    	{
-    		printf("-");
-    	}
-    	print_number(stack->number);
+	if(stack)
+	{
+    		if(stack->sign == 1)
+    		{
+    			printf("-");
+    		}
+    		print_number(stack->number);
+	}
+	else printf("empty stakc\n");		
         	break;
     	case'q':
         	free_stack(stack);
